@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Study: UX/UI Design of a Health Companion Super App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fbfbfd; /* Apple-like subtle off-white */
+            color: #1d1d1f;
+        }
+        
+        /* Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .text-container {
+            max-width: 48rem; /* 768px */
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .full-width-container {
+            width: 100%;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Styling for the clean Apple-like lists */
+        .task-list li::marker {
+            color: #0066cc;
+            font-weight: 600;
+        }
+
+        /* Bento Box Active States */
+        .persona-tab {
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .persona-tab.active {
+            background-color: white;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+            border-color: #f3f4f6;
+        }
+        .persona-tab.active h3 { color: #111827; }
+        .persona-tab.active p { color: #6b7280; }
+        .persona-tab:not(.active) h3 { color: #6b7280; }
+        .persona-tab:not(.active) p { color: #9ca3af; }
+        .persona-tab:not(.active):hover { background-color: rgba(243, 244, 246, 0.6); }
+
+        .persona-panel {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(15px) scale(0.98);
+            z-index: 0;
+        }
+        .persona-panel.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+            z-index: 10;
+        }
+
+        /* View Layer & Toggles */
+        .persona-tab {
+            height: 5.5rem; /* Fixed height so it never resizes on hover */
+        }
+        .persona-tab .toggles {
+            display: none;
+        }
+        .persona-tab.active .toggles {
+            display: flex;
+        }
+        
+        /* Smooth dynamic height wrapper */
+        .bento-content-wrapper {
+            position: relative;
+            transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: height;
+            min-height: 400px;
+        }
+
+        .view-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease-in-out;
+            z-index: 0;
+        }
+        
+        .view-layer.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <!-- Hero Section -->
+    <header class="pt-40 pb-20 text-center px-4 reveal">
+        <p class="text-[#0066cc] font-semibold tracking-widest text-sm uppercase mb-4">UX/UI Case Study</p>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight max-w-5xl mx-auto leading-tight mb-8">
+            Design of a Health Companion Super App
+        </h1>
+        <!-- Author Block -->
+        <div class="flex items-center justify-center space-x-3 mb-8 text-sm md:text-base text-gray-500">
+            <span class="text-gray-300">|</span>
+            <span>February 21, 2026</span>
+        </div>
+    </header>
+
+    <main class="pb-32">
+        
+        <!-- Introduction -->
+        <section class="text-container reveal mb-24 text-lg leading-relaxed text-gray-600">
+            <h2 class="text-3xl font-semibold text-gray-900 mb-6 tracking-tight">Introduction</h2>
+            <p>
+                Managing a chronic health condition is the second hardest aspect of it, first being having a chronic illness. Depending on severity, it can be labour intensive. Individuals may need to juggle multiple prescriptions, frequent medical appointments with general doctors or specialists, and some, while also balancing work. All the while, enduring the symptoms of long-term illness; the challenge isn't just the medical condition, it’s the cognitive load of all the busy work it entails.  Additionally, this work is often performed by supporters either partners or family members. Some may even be unable to perform any of this work themselves. An encompassing solution would go a long way to reducing some of that burden. Current methods are more or less ad-hoc and fragmented; some use a pillbox for meds, daily timers, a generic calendar for appointments, and phone calls or over-complicated hospital portals for contacting doctors. This fragmentation leads to fatigue, where the complexity of the management system causes patients to miss doses or skip follow-ups, and potential family friction directly impacting their health. Ideally, the living standard of people everywhere would be improved if they could offload this burdensome menial task. That is the goal of our all-in-one super health companion app, Sisu. It is intended to serve as an assistant to handle the management process. The intention is to address these pain points and more by having context-aware medication reminders, seamless appointment tracking, an easy to use communication method between the patient, their caregivers, and their healthcare providers, and putting it all in one location.
+            </p>
+        </section>
+
+        <!-- Research Methods -->
+        <section class="text-container reveal mb-24">
+            <h2 class="text-3xl font-semibold text-gray-900 mb-6 tracking-tight">Research Methods</h2>
+            <p class="text-lg leading-relaxed text-gray-600 mb-10">
+                Knowing your audience is paramount to success. Investigating their unique challenges would require data from different points of view of all individuals involved i.e. the patient, caregiver, doctor. This approach ensures we capture not only the functional requirements that are easily quantifiable, but also the emotional and psychological barriers that often lead to non-adherence. It also allows evaluating the constraints of each entity to determine viability of a function in the app. The methods below are some ways one could retrieve more insight. Additionally, certain visual design aspects like complexity, number of actionable steps, and number of items on a page are influenced with knowledge of a lived experience with chronic illness.
+            </p>
+
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-xl font-medium text-gray-900 mb-3">Large Scale Surveys</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                       Surveys can identify trends across a large demographic. This helps prioritize which features are "must-haves" versus "nice-to-haves" for different categories of groups or condition types. You can also be made aware of unidentified concerns on device or app usage. To note however, is the difficulty in participation in lengthy questionnaires and their lack of depth and nuance; they cannot explain why a user answered a certain way, and question phrasing can lead to biased results.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-medium text-gray-900 mb-3">Literary & Secondary Research</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        This methodology involves a systematic review of existing knowledge, including academic journals, medical guidelines, competitor apps, and legal frameworks. Instead of gathering new raw data, analyze what has already been proven regarding chronic disease management and digital health interventions. It is an efficient way to build a foundation before spending resources. It leverages established behavioral science models to understand the psychology of habit formation around medication. It is also critical for adhering to regulations, ensuring compliance with privacy standards like HIPAA (USA) and PIPEDA (Canada), GDPR (EU). Furthermore, analyzing competitors helps identify common market failures such as "alert fatigue".
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-medium text-gray-900 mb-3">Semi-Structured Interviews</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        The is a qualitative method that requires one-on-one discussions with a patient, caregiver, or medical professional. This method attempts to answer the “why” behind their health behaviors. Interviews are invaluable for uncovering the emotional friction of chronic illness. It can lead to discovering hidden pain points, understanding the patient's mental model of their illness, and identifying specific lifestyle constraints. It can reveal usage scenarios about how such an app can fit into a lifestyle. Similarly, from the doctor/hospital point of view, it provides a depiction of the processes and procedures and their limitations. Studies in The Journal of Medical Internet Research (JMIR) highlight the utility offered by semi-structured interviews for identifying "non-obvious" barriers to digital health adoption, such as paradoxes of efficiency, data privacy or lack of digital literacy. On the other hand, it is time-intensive and has a limited sample size for any given individual’s situation.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-medium text-gray-900 mb-3">Observation</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        By observing users in their natural environments; their kitchens, doctor's offices, in transit, we see how they manage their health, rather than how they say they do. This approach reveals any rube goldberg methods people create, like post-it notes on the fridge, memory anchors, alarms. Useful to map out how to incorporate the app. Human-Computer Interaction (HCI) research frequently uses observation to design assistive technologies. However, it can be intrusive, potentially unfeasible, and the Hawthorne Effect may occur.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Research Summary -->
+        <section class="text-container reveal mb-24">
+            <h2 class="text-3xl font-semibold text-gray-900 mb-6 tracking-tight">User Research</h2>
+            <p class="text-lg leading-relaxed text-gray-600">
+                User research in the domain of mobile health applications for chronic illness reveals that patients need systems that reduce, rather than add to, their daily cognitive load. Studies indicate that individuals often resort to fragmented behaviors such as combining physical pillboxes with generic smartphone alarms and paper calendars, which fail to accommodate the evolving health needs of an illness. Consequently, a primary user need is the centralization of these tasks into a single, cohesive ecosystem. Research highlights a strong demand for high customizability and personalization. Users express that data tracking can induce anxiety by acting as a constant reminder of their illness. Therefore, the ability to tailor features, opt into specific notifications, and receive context-aware reminders is critical to sustaining long-term engagement and mitigating alert fatigue [1]. Despite the clear need for comprehensive solutions, significant challenges hinder user adoption and retention. A prominent barrier is the gap between the complex user interfaces and the varying digital health literacy of the demographic, particularly among older adults [2]. Usability issues, such as inflexible reminder systems that cannot adapt to unexpected routine changes, often lead to frustration and missed medication doses. Additionally, privacy and security concerns remain relevant. Users are apprehensive about sharing sensitive health data, fearing data leaks leading to further consequences [3]. Addressing these issues requires a human-centered design approach that not only ensures robust data protection but also actively involves both patients and healthcare providers to guarantee that the tool aligns seamlessly with their lived experiences and capabilities.
+            </p>
+        </section>
+
+        <!-- Personas & Journeys (Bento Box) -->
+        <section class="reveal mb-32 max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-10 pl-2 lg:pl-0 max-w-4xl">
+                <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">Personas & Journeys</h2>
+                <p class="text-gray-600 mt-4 text-lg">Hover over a persona below, and toggle between their profile and journey map. Images are loaded at full uncropped resolution.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+                
+                <!-- Navigation Column -->
+                <div class="lg:col-span-3 flex flex-col space-y-2" id="persona-nav">
+                    <!-- Eleanor -->
+                    <div class="persona-tab active rounded-2xl flex items-stretch justify-between group border border-transparent" data-target="panel-eleanor">
+                        <div class="pl-6 flex items-center">
+                            <h3 class="text-xl font-bold transition-colors duration-300">Eleanor</h3>
+                        </div>
+                        <div class="toggles flex-col w-24 bg-gray-100/80 m-1.5 rounded-xl overflow-hidden border border-gray-200/50">
+                            <button class="toggle-btn active flex-1 w-full text-xs font-semibold bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] text-gray-900 transition-all" data-view="persona">Persona</button>
+                            <button class="toggle-btn flex-1 w-full text-xs font-medium text-gray-500 hover:text-gray-900 transition-all" data-view="journey">Journey</button>
+                        </div>
+                    </div>
+                    <!-- Marcus -->
+                    <div class="persona-tab rounded-2xl flex items-stretch justify-between group border border-transparent" data-target="panel-marcus">
+                        <div class="pl-6 flex items-center">
+                            <h3 class="text-xl font-bold transition-colors duration-300">Marcus</h3>
+                        </div>
+                        <div class="toggles flex-col w-24 bg-gray-100/80 m-1.5 rounded-xl overflow-hidden border border-gray-200/50">
+                            <button class="toggle-btn active flex-1 w-full text-xs font-semibold bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] text-gray-900 transition-all" data-view="persona">Persona</button>
+                            <button class="toggle-btn flex-1 w-full text-xs font-medium text-gray-500 hover:text-gray-900 transition-all" data-view="journey">Journey</button>
+                        </div>
+                    </div>
+                    <!-- Sarah -->
+                    <div class="persona-tab rounded-2xl flex items-stretch justify-between group border border-transparent" data-target="panel-sarah">
+                        <div class="pl-6 flex items-center">
+                            <h3 class="text-xl font-bold transition-colors duration-300">Sarah</h3>
+                        </div>
+                        <div class="toggles flex-col w-24 bg-gray-100/80 m-1.5 rounded-xl overflow-hidden border border-gray-200/50">
+                            <button class="toggle-btn active flex-1 w-full text-xs font-semibold bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] text-gray-900 transition-all" data-view="persona">Persona</button>
+                            <button class="toggle-btn flex-1 w-full text-xs font-medium text-gray-500 hover:text-gray-900 transition-all" data-view="journey">Journey</button>
+                        </div>
+                    </div>
+                    <!-- David -->
+                    <div class="persona-tab rounded-2xl flex items-stretch justify-between group border border-transparent" data-target="panel-david">
+                        <div class="pl-6 flex items-center">
+                            <h3 class="text-xl font-bold transition-colors duration-300">David</h3>
+                        </div>
+                        <div class="toggles flex-col w-24 bg-gray-100/80 m-1.5 rounded-xl overflow-hidden border border-gray-200/50">
+                            <button class="toggle-btn active flex-1 w-full text-xs font-semibold bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] text-gray-900 transition-all" data-view="persona">Persona</button>
+                            <button class="toggle-btn flex-1 w-full text-xs font-medium text-gray-500 hover:text-gray-900 transition-all" data-view="journey">Journey</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bento Content Column (Dynamic Height Wrapper without gray padding box) -->
+                <div class="lg:col-span-9 bento-content-wrapper">
+                    
+                    <!-- Eleanor Panel -->
+                    <div id="panel-eleanor" class="persona-panel active">
+                        <div class="view-layer persona-layer active">
+                            <div class="w-full rounded-3xl overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.07)] ring-1 ring-gray-900/5 bg-white">
+                                <img src="images/persona1.jpg" alt="Eleanor Persona" class="w-full h-auto block transform transition duration-700 group-hover:scale-[1.02]">
+                                
+                            </div>
+                        </div>
+                        <div class="view-layer journey-layer">
+                            <div class="w-full rounded-3xl overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.07)] ring-1 ring-gray-900/5 bg-white">
+                                <img src="images/journey1.png" alt="Eleanor Journey" class="w-full h-auto block transform transition duration-700 group-hover:scale-[1.02]">
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Marcus Panel -->
+                    <div id="panel-marcus" class="persona-panel">
+                        <div class="view-layer persona-layer active">
+                            <div class="w-full rounded-3xl overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.07)] ring-1 ring-gray-900/5 bg-white">
+                                <img src="images/persona2.jpg" alt="Marcus Persona" class="w-full h-auto block transform transition duration-700 group-hover:scale-[1.02]">
+                                
+                            </div>
+                        </div>
+                        <div class="view-layer journey-layer">
+                            <div class="w-full rounded-3xl overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.07)] ring-1 ring-gray-900/5 bg-white">
+                                <img src="images/journey2.png" alt="Marcus Journey" class="w-full h-auto block transform transition duration-700 group-hover:scale-[1.02]">
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sarah Panel -->
+                    <div id="panel-sarah" class="persona-panel">
+                        <div class="view-layer persona-layer active">
+                            <div class="w-full rounded-3xl overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.07)] ring-1 ring-gray-900/5 bg-white">
+                                <img src="images/persona3.jpg" alt="Sarah Persona" class="w-full h-auto block transform transition duration-700 group-hover:scale-[1.02]">
+                                
+                            </div>
+                        </div>
+                        <div class="view-layer journey-layer">
+                            <div class="w-full flex flex-col gap-6">
+                                <div class="w-full rounded-3xl overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.07)] ring-1 ring-gray-900/5 bg-white">
+                                    <img src="images/journey3.png" alt="Sarah Journey 1" class="w-full h-auto block transform transition duration-700 group-hover:scale-[1.02]">
+                                </div>
+                                <div class="w-full rounded-3xl overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.07)] ring-1 ring-gray-900/5 bg-white">
+                                    <img src="images/journey4.png" alt="Sarah Journey 2" class="w-full h-auto block transform transition duration-700 group-hover:scale-[1.02]">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- David Panel -->
+                    <div id="panel-david" class="persona-panel">
+                        <div class="view-layer persona-layer active">
+                            <div class="w-full rounded-3xl overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.07)] ring-1 ring-gray-900/5 bg-white">
+                                <img src="images/persona4.jpg" alt="David Persona" class="w-full h-auto block transform transition duration-700 group-hover:scale-[1.02]">
+                                
+                            </div>
+                        </div>
+                        <div class="view-layer journey-layer">
+                            <div class="w-full rounded-3xl overflow-hidden relative group shadow-[0_20px_50px_rgba(0,0,0,0.07)] ring-1 ring-gray-900/5 bg-white">
+                                <img src="images/journey5.png" alt="David Journey" class="w-full h-auto block transform transition duration-700 group-hover:scale-[1.02]">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Usability Testing & Feedback -->
+        <section class="text-container reveal mb-24">
+            <h2 class="text-3xl font-semibold text-gray-900 mb-6 tracking-tight">Usability Testing</h2>
+            <p class="text-lg leading-relaxed text-gray-600 mb-10">
+                This plan focuses on validating the core functionality, ensuring that adding medications, adding doctors, communication, and responding to alerts are intuitive for users with varying levels of tech literacy. The primary goals will be to assess learnability, validate accessibility, basic functionality, and error recovery. A new user should be able to quickly add medications, interact with and parse the UI, understand and use basic features, and easily undo an action.
+            </p>
+
+            <h3 class="text-xl font-medium text-gray-900 mb-3">Feedback Strategy</h3>
+            <p class="text-gray-600 leading-relaxed">
+                Evaluation of the prototype will consist of a user test that will combine behavioral data with user sentiment. It begins with a pre-test survey to benchmark the user's initial mental model and expectations of the app. During the execution of tasks, session recording tools are used to simultaneously capture the screen interaction and the user’s facial expressions, allowing us to correlate specific UI friction points with visible emotional responses. Immediately following the session, a post-test survey captures subjective satisfaction. Finally, from the data, derive four metrics such as task success rate, time on task (measuring efficiency relative to an expert), error rate (quantifying misclicks), etc. This dataset will be reviewed to uncover distinct patterns where users consistently deviated from the intended path or experienced cognitive overload. These identified issues are then prioritized using a severity matrix, ranking them by their impact on user goals and their frequency of occurrence. This prioritized list acts as the roadmap, translating observed deficiencies into actionable UI refinements such as adjusting button placement, simplifying navigation hierarchy, or clarifying ambiguous instructions, then testing and reapplying this strategy until completion.
+            </p>
+        </section>
+
+        <!-- Tasks -->
+        <section class="text-container reveal mb-32 bg-white p-8 md:p-12 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-8 tracking-tight">Tasks</h2>
+            <ol class="task-list space-y-6 list-decimal pl-5 text-gray-900">
+                <li class="pl-2">
+                    <span class="font-semibold text-lg">Adding Medication</span>
+                    <ul class="list-disc pl-5 mt-2 text-gray-600 text-base font-normal space-y-1">
+                        <li>Scenario: The user has a new prescription and needs to schedule it using the “Scan Bottle” function. "Scan" medication and schedule for 8:00 AM daily.</li>
+                        <li>Success: The user successfully finds the camera icon, completes the scan, and confirms the set time.</li>
+                    </ul>
+                </li>
+                <li class="pl-2">
+                    <span class="font-semibold text-lg">Care Team Management</span>
+                    <ul class="list-disc pl-5 mt-2 text-gray-600 text-base font-normal space-y-1">
+                        <li>Scenario: You have a new patient referral to Dr. Alice Chen, a cardiologist. Locate her profile within the application, save her contact details.</li>
+                        <li>Success: The user must successfully navigate to the 'Care Team' section, utilize the search function to find Dr. Chen, and add her.</li>
+                    </ul>
+                </li>
+                <li class="pl-2">
+                    <span class="font-semibold text-lg">Starting a Specialist Chat</span>
+                    <ul class="list-disc pl-5 mt-2 text-gray-600 text-base font-normal space-y-1">
+                        <li>Scenario: You need to inform a specialist on your symptoms. Use the app to initiate a secure, direct message.</li>
+                        <li>Success: User navigates to the 'Messages', selects the correct specialist from their directory, successfully drafts a short message, and sends it through the secure portal.</li>
+                    </ul>
+                </li>
+                <li class="pl-2">
+                    <span class="font-semibold text-lg">Assess Progress</span>
+                    <ul class="list-disc pl-5 mt-2 text-gray-600 text-base font-normal space-y-1">
+                        <li>Scenario: You want to see progress on medications.</li>
+                        <li>Success: User opens the app and views the progress bar on the home page. Knows by tapping or holding, can open to see more details.</li>
+                    </ul>
+                </li>
+                <li class="pl-2">
+                    <span class="font-semibold text-lg">Assess Appointments</span>
+                    <ul class="list-disc pl-5 mt-2 text-gray-600 text-base font-normal space-y-1">
+                        <li>Scenario: You want to see any upcoming events you registered or made for you by a clinic.</li>
+                        <li>Success: User opens the app and views the upcoming events carousel showing appointments.</li>
+                    </ul>
+                </li>
+                <li class="pl-2">
+                    <span class="font-semibold text-lg">Registering a Caregiver</span>
+                    <ul class="list-disc pl-5 mt-2 text-gray-600 text-base font-normal space-y-1">
+                        <li>Scenario: You want your child to help coordinate your upcoming surgeries. Invite them to the app as a registered caregiver and grant them permission.</li>
+                        <li>Success: User finds the settings, connects the caregiver's account, successfully identifies and toggles on the specific access permissions and dispatches the digital invite.</li>
+                    </ul>
+                </li>
+                <li class="pl-2">
+                    <span class="font-semibold text-lg">Customizing the Home Page</span>
+                    <ul class="list-disc pl-5 mt-2 text-gray-600 text-base font-normal space-y-1">
+                        <li>Scenario: You want your most important information front and center. Please customize your home screen dashboard by adding the “Blood Sugar Graph”.</li>
+                        <li>Success: User successfully locates the dashboard edit mode, selects the correct graph and shortcut widgets from a menu, places them on the home screen, and saves the layout.</li>
+                    </ul>
+                </li>
+                <li class="pl-2">
+                    <span class="font-semibold text-lg">Customizing Alert Types</span>
+                    <ul class="list-disc pl-5 mt-2 text-gray-600 text-base font-normal space-y-1">
+                        <li>Scenario: You need your medication reminders to be discreet but unmissable during work meetings. Modify your morning medication alert to turn off the sound, but enable a strong vibration.</li>
+                        <li>Success: User navigates to the specific medication's settings or the general notification preferences, correctly toggles off audio, and enables haptics.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Design Section -->
+        <section class="reveal mb-24">
+            <div class="text-container mb-10">
+                <h2 class="text-3xl font-semibold text-gray-900 tracking-tight">Design</h2>
+            </div>
+
+            <!-- Sketches Section Header -->
+            <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 mb-6 mt-16">
+                <h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Sketches</h3>
+            </div>
+
+            <!-- Sketches: 2 Images Side by Side -->
+            <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+                <div class="w-full flex rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.07)] border border-gray-100 transition-transform duration-700 hover:-translate-y-2 ring-1 ring-gray-900/5">
+                    <div class="w-1/2 bg-gray-50 flex items-center justify-center">
+                        <img src="images/sketch1.png" alt="Sketch Concept 1" class="w-full h-auto block">
+                    </div>
+                    <div class="w-1/2 bg-gray-100 flex items-center justify-center">
+                        <img src="images/sketch2.png" alt="Sketch Concept 2" class="w-full h-auto block">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wireframes Section Header -->
+            <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 mb-6 mt-24">
+                <h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Wireframe</h3>
+            </div>
+
+            <!-- Wireframes: 1 Floating Image -->
+            <div class="w-full mb-16">
+                <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.07)] border border-gray-100 transition-transform duration-700 hover:-translate-y-2 ring-1 ring-gray-900/5">
+                        <img src="images/wireframe.png" alt="App Wireframes" class="w-full h-auto block">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prototype Section Header -->
+            <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 mb-10 mt-24">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
+                    <div class="max-w-2xl">
+                        <h3 class="text-2xl font-semibold text-gray-900 tracking-tight">Prototype</h3>
+                    </div>
+                    <a href="https://www.figma.com/proto/g567SsKZ6fEwzwea8bC6Aq/357-Wireframe?node-id=27-3043&p=f&t=b21hHlfRf4oFTph6-1&scaling=min-zoom&content-scaling=fixed&page-id=16%3A868&starting-point-node-id=27%3A3043" class="inline-flex flex-shrink-0 items-center justify-center px-8 py-3.5 text-sm font-medium text-white bg-[#0066cc] rounded-full hover:bg-[#005bb5] transition shadow-lg shadow-blue-500/30 transform hover:-translate-y-0.5">
+                        View Interactive Figma
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Prototype: 3 Floating Images Uncropped -->
+            <div class="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-16 mt-10">
+                <div class="w-full bg-gray-900 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.07)] border border-gray-800 transition-transform duration-700 hover:-translate-y-2 flex items-center justify-center">
+                    <img src="images/prototype1.png" alt="Prototype Dashboard" class="w-full h-auto block opacity-95">
+                </div>
+                <div class="w-full bg-gray-900 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.07)] border border-gray-800 transition-transform duration-700 hover:-translate-y-2 flex items-center justify-center">
+                    <img src="images/prototype2.png" alt="Prototype Telehealth" class="w-full h-auto block opacity-95">
+                </div>
+                <div class="w-full bg-gray-900 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.07)] border border-gray-800 transition-transform duration-700 hover:-translate-y-2 flex items-center justify-center">
+                    <img src="images/prototype3.png" alt="Prototype Records" class="w-full h-auto block opacity-95">
+                </div>
+            </div>
+        </section>
+
+        <!-- Reflection -->
+        <section class="text-container reveal mb-24">
+            <h2 class="text-3xl font-semibold text-gray-900 mb-6 tracking-tight">Reflection</h2>
+            <p class="text-lg leading-relaxed text-gray-600">
+                The UX design process for this health companion app is irrefutably vital to providing a good design, a useful design, for those in need. These processes allow one to look beyond the use of components like timers, alerts, reminders, and events to pay particular attention to the purpose they serve. How these elements are used in different situations, from a different point of view, demands that they be flexible in behaviour in order to cater to all needs. Ideally, if the system could be perfectly automated to remove all user interaction, then that would be the ideal application as it would eliminate manual labour, alleviate most cognitive load, and thus reduce stress for users. A challenge encountered was ensuring the app satisfies a diverse user base, meaning some users do not require much complexity or feature set, while others do. This meant that any given design is at odds with a subset of users. There is also a need to balance interface complexity. The answer reached was to provide a means of customizing elements of the app to allow them to meet their personal needs while being approachable in the beginning.
+            </p>
+        </section>
+
+        <!-- References -->
+        <section class="text-container reveal mb-10 pt-10 border-t border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900 mb-6 tracking-tight">References</h2>
+            <ul class="space-y-4 text-sm text-gray-500 break-words">
+                <li>[1] "Tracking Chronic Diseases via Mobile Health Applications: Which User Experience Aspects Are Key?," <em>PubMed Central (PMC)</em>, Dec. 12, 2025. [Online]. Available: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12733319/" class="text-[#0066cc] hover:underline" target="_blank" rel="noopener noreferrer">https://pmc.ncbi.nlm.nih.gov/articles/PMC12733319/</a>.</li>
+                <li>[2] "Barriers to and Facilitators of Digital Health Technology Adoption Among Older Adults With Chronic Diseases: Updated Systematic Review," <em>PubMed Central (PMC)</em>, Oct. 5, 2025. [Online]. Available: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12464506/" class="text-[#0066cc] hover:underline" target="_blank" rel="noopener noreferrer">https://pmc.ncbi.nlm.nih.gov/articles/PMC12464506/</a>.</li>
+                <li>[3] "Barriers to the Utilization of mHealth Applications in Saudi Arabia: Insights from Patients with Chronic Diseases," <em>MDPI</em>, 2025. [Online]. Available: <a href="https://www.mdpi.com/2227-9032/13/6/665" class="text-[#0066cc] hover:underline" target="_blank" rel="noopener noreferrer">https://www.mdpi.com/2227-9032/13/6/665</a>.</li>
+            </ul>
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 py-12 text-center text-sm text-gray-500">
+        <p>&copy; 2026 Portfolio. Designed with purpose.</p>
+    </footer>
+
+    <!-- Scroll Reveal Script -->
+    <script>
+        // Scroll reveal logic
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal();
+
+        // Bento Box Logic with Smooth Height Adjustment
+        const tabs = document.querySelectorAll('.persona-tab');
+        const panels = document.querySelectorAll('.persona-panel');
+        const bentoWrapper = document.querySelector('.bento-content-wrapper');
+
+        // Dynamically update wrapper height to prevent clipping or excessive whitespace
+        const updateBentoHeight = () => {
+            const activeLayer = document.querySelector('.persona-panel.active .view-layer.active');
+            if (activeLayer && bentoWrapper) {
+                bentoWrapper.style.height = activeLayer.scrollHeight + 'px';
+            }
+        };
+
+        // Use ResizeObserver to detect image loading and window resizing effortlessly
+        const resizeObserver = new ResizeObserver(() => {
+            updateBentoHeight();
+        });
+
+        // Observe all view layers to track layout changes seamlessly
+        document.querySelectorAll('.view-layer').forEach(layer => {
+            resizeObserver.observe(layer);
+            // Backup for slow images: update height upon load completion
+            const images = layer.querySelectorAll('img');
+            images.forEach(img => img.addEventListener('load', updateBentoHeight));
+        });
+
+        tabs.forEach(tab => {
+            // Hover to switch active persona tab
+            tab.addEventListener('mouseenter', () => {
+                if (tab.classList.contains('active')) return;
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const targetId = tab.getAttribute('data-target');
+
+                panels.forEach(panel => {
+                    if (panel.id === targetId) {
+                        panel.classList.add('active');
+                    } else {
+                        panel.classList.remove('active');
+                    }
+                });
+                
+                // Recalculate height whenever tab is changed
+                setTimeout(updateBentoHeight, 10);
+            });
+
+            // Click to toggle between Persona & Journey views within the tab
+            const viewBtns = tab.querySelectorAll('.toggle-btn');
+            viewBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    viewBtns.forEach(b => {
+                        b.classList.remove('bg-white', 'shadow-[0_2px_8px_rgba(0,0,0,0.08)]', 'text-gray-900', 'active');
+                        b.classList.add('text-gray-500');
+                    });
+                    
+                    btn.classList.add('bg-white', 'shadow-[0_2px_8px_rgba(0,0,0,0.08)]', 'text-gray-900', 'active');
+                    btn.classList.remove('text-gray-500');
+
+                    const view = btn.getAttribute('data-view');
+                    const targetId = tab.getAttribute('data-target');
+                    const panel = document.getElementById(targetId);
+                    
+                    const layers = panel.querySelectorAll('.view-layer');
+                    layers.forEach(layer => {
+                        if (layer.classList.contains(`${view}-layer`)) {
+                            layer.classList.add('active');
+                        } else {
+                            layer.classList.remove('active');
+                        }
+                    });
+
+                    // Recalculate height whenever toggle is switched
+                    setTimeout(updateBentoHeight, 10);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
